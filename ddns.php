@@ -6,7 +6,7 @@ $confFile = __DIR__ . '/config.ini';
 
 if(!file_exists($confFile))
 {
-	echo "Missing config file. Please copy config.php.skel to config.php and fill out the values therein.\n";
+	echo "Missing config file. Please copy config.ini to config.php and fill out the values therein.\n";
 	return 1;
 }
 
@@ -81,7 +81,10 @@ try
 				{
 					echo "No existing record found. Creating a new one\n";
 				}
-				$ret = $api->createDnsRecord($zone['id'], 'A', $recordName, $ip, array('ttl' => $config['ttl']));
+				$ret = $api->createDnsRecord($zone['id'], 'A', $recordName, $ip, array(
+					'ttl' => $config['ttl']*1, 
+					'proxied' => $proxy
+					));
 			}
 			else if($record['type'] != 'A' || $record['content'] != $ip || $record['ttl'] != $config['ttl'])
 			{

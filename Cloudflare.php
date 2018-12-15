@@ -51,8 +51,9 @@ class Cloudflare
     switch ($method)
     {
       case self::POST :
-        curl_setopt($curl, CURLOPT_POST, true);
-        curl_setopt($curl, CURLOPT_POSTFIELDS, $params);
+        curl_setopt($curl, CURLOPT_CUSTOMREQUEST, 'POST');
+        curl_setopt($curl, CURLOPT_POSTFIELDS, json_encode($params));
+        $headers[] = 'Content-type: application/json';
         break;
       case self::PUT :
         curl_setopt($curl, CURLOPT_CUSTOMREQUEST, 'PUT');
@@ -84,7 +85,7 @@ class Cloudflare
     {
       //throw new CloudflareException(curl_error($curl));
     }
-    elseif (false == $response['success'])
+    else if (false == $response['success'])
     {
       //throw new CloudflareException($response['errors'][0]['message']);
     }
@@ -251,6 +252,8 @@ class Cloudflare
       'type'    => $type,
       'name'    => $name,
       'content' => $content,
+      'ttl' => $params['ttl']*1,
+      'proxied' => $params['proxied']?true:false
     ));
     $data = $this->post('/zones/' . $zoneId . '/dns_records/', $params);
   }
