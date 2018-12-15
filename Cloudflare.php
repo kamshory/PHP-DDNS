@@ -1,6 +1,4 @@
 <?php
-#https://github.com/mmerian/cloudflare
-
 class CloudflareException extends Exception
 {
 }
@@ -91,10 +89,8 @@ class Cloudflare
       //throw new CloudflareException($response['errors'][0]['message']);
     }
     curl_close($curl);
-
     $this->resultInfo = isset($response['result_info']) ? $response['result_info'] : null;
-
-    return $response['result'];
+    return $response;
   }
 
   /**
@@ -154,7 +150,8 @@ class Cloudflare
 
   public function getZones(array $params = array())
   {
-    return $this->get('/zones', $params);
+    $data = $this->get('/zones', $params);
+	return $data['result'];
   }
 
   public function getResultInfo()
@@ -167,9 +164,10 @@ class Cloudflare
     $zones = $this->getZones(array(
       'name' => $name
     ));
+	
     foreach ($zones as $zone)
     {
-      if ($zone['name'] == $name)
+      if($zone['name'] == $name)
       {
         return $zone;
       }
@@ -179,13 +177,15 @@ class Cloudflare
 
   public function getZoneDnsRecords($zoneId, array $params = array())
   {
-    return $this->get('/zones/' . $zoneId . '/dns_records', $params);
+    $data = $this->get('/zones/' . $zoneId . '/dns_records', $params);
+	return $data['result'];
   }
 
   public function createDnsZone($name, array $params = array())
   {
     $params['name'] = $name;
-    return $this->post('/zones', $params);
+    $data = $this->post('/zones', $params);
+	return $data['result'];
   }
 
   /**
@@ -258,6 +258,7 @@ class Cloudflare
   public function updateDnsRecord($zoneId, $recordId, array $params = array())
   {
     return $this->put('/zones/' . $zoneId . '/dns_records/' . $recordId, $params);
+	
   }
 
   public function deleteDnsRecord($zoneId, $recordId)

@@ -51,7 +51,26 @@ try
 	}
 	foreach($recordNames as $recordName)
 	{
-		$recordName = trim($recordName);
+		$item = trim($recordName);
+		if(stripos($item, "#") !== false)
+		{
+			$arr = explode("#", $item);
+			$recordName = trim($arr[0]);
+			if(stripos($arr[1], "1") === false)
+			{
+				$proxy = false;
+			}
+			else
+			{
+				$proxy = true;
+			}
+		}
+		else
+		{
+			$recordName = $item;
+			$proxy = false; // or true if you want to use proxy 
+		}
+		
 		if($recordName != '')
 		{
 			$records = $api->getZoneDnsRecords($zone['id'], array('name' => $recordName));
@@ -74,7 +93,8 @@ try
 					'type'    => 'A',
 					'name'    => $recordName,
 					'content' => $ip,
-					'ttl'     => $config['ttl'],
+					'ttl'     => $config['ttl']*1,
+					'proxied' => $proxy
 				));
 			}
 			else
